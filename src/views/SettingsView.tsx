@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useThemeStore } from "@/store/themeStore";
 import { ThemeSwatch } from "@/components/settings/ThemeSwatch";
 import { ThemeEditor } from "@/components/settings/ThemeEditor";
+import { UpdateSection } from "@/components/settings/UpdateSection";
 import { Button } from "@/components/common/Button";
 import type { Theme, ThemeColors } from "@/types/theme";
 
@@ -30,6 +31,8 @@ export function SettingsView() {
   return (
     <div className="px-8 py-10">
       <h1 className="mb-8 text-2xl font-bold">Einstellungen</h1>
+
+      <UpdateSection />
 
       <section className="mb-10">
         <h2 className="mb-4 text-lg font-semibold">Theme</h2>
