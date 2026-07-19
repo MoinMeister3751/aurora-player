@@ -8,6 +8,7 @@ import { usePlaybackPolling } from "@/hooks/usePlaybackPolling";
 import { LoginView } from "@/views/LoginView";
 import { AppShell } from "@/components/layout/AppShell";
 import { Spinner } from "@/components/common/Spinner";
+import { UpdateBanner } from "@/components/common/UpdateBanner";
 
 export default function App() {
   const status = useAuthStore((s) => s.status);
@@ -33,15 +34,17 @@ export default function App() {
 
   if (status === "checking") {
     return (
-      <div className="flex h-screen w-screen items-center justify-center bg-aurora-bg">
+      <div className="relative flex h-screen w-screen items-center justify-center bg-aurora-bg">
+        <UpdateBanner />
         <Spinner size={32} />
       </div>
     );
   }
 
-  if (status !== "signed-in") {
-    return <LoginView />;
-  }
-
-  return <AppShell />;
+  return (
+    <div className="relative h-screen w-screen">
+      <UpdateBanner />
+      {status === "signed-in" ? <AppShell /> : <LoginView />}
+    </div>
+  );
 }

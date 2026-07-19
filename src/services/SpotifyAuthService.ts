@@ -136,7 +136,14 @@ export class SpotifyAuthService {
 
   private async persistRefreshToken(token: string) {
     if (!token) return;
-    await invoke("save_refresh_token", { token });
+    try {
+      await invoke("save_refresh_token", { token });
+    } catch (err) {
+      // A failed write to the OS credential store shouldn't block using
+      // the app in the current session — worst case the user has to log
+      // in again next launch instead of the login silently failing now.
+      console.warn("Could not persist Spotify refresh token:", err);
+    }
   }
 
   async loadPersistedRefreshToken(): Promise<string | null> {

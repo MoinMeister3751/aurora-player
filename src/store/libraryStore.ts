@@ -17,6 +17,7 @@ interface LibraryState {
   searchResults: SearchResults | null;
   isSearching: boolean;
   loadedOnce: boolean;
+  error: string | null;
 
   loadLibrary: () => Promise<void>;
   loadQueue: () => Promise<void>;
@@ -35,20 +36,29 @@ export const useLibraryStore = create<LibraryState>((set, get) => ({
   searchResults: null,
   isSearching: false,
   loadedOnce: false,
+  error: null,
 
   loadLibrary: async () => {
     const api = useAuthStore.getState().apiClient;
-    const [playlists, savedAlbums, recentlyPlayed] = await Promise.all([
-      api.getMyPlaylists(),
-      api.getSavedAlbums(),
-      api.getRecentlyPlayed(),
-    ]);
-    set({
-      playlists: playlists.items,
-      savedAlbums: savedAlbums.items,
-      recentlyPlayed: recentlyPlayed.items,
-      loadedOnce: true,
-    });
+    try {
+      const [playlists, savedAlbums, recentlyPlayed] = await Promise.all([
+        api.getMyPlaylists(),
+        api.getSavedAlbums(),
+        api.getRecentlyPlayed(),
+      ]);
+      set({
+        // Spotify's API can include null entries for playlists that were
+        // deleted or are no longer accessible (a documented quirk) —
+        // filter those out before they hit the UI.
+        playlists: playlists.items.filter((p): p is SpotifyPlaylist => p != null),
+        savedAlbums: savedAlbums.items.filter((a) => a.album != null),
+        recentlyPlayed: recentlyPlayed.items.filter((r) => r.track != null),
+        loadedOnce: true,
+        error: null,
+      });
+    } catch (err) {
+      set({ error: (err as Error).message, loadedOnce: true });
+    }
   },
 
   loadQueue: async () => {

@@ -4,7 +4,6 @@ import { NowPlayingView } from "@/views/NowPlayingView";
 import { LibraryView } from "@/views/LibraryView";
 import { PlaylistDetailView } from "@/views/PlaylistDetailView";
 import { SearchView } from "@/views/SearchView";
-import { UpdateBanner } from "@/components/common/UpdateBanner";
 
 export function AppShell() {
   const view = useUiStore((s) => s.view);
@@ -15,7 +14,6 @@ export function AppShell() {
 
   return (
     <div className="relative flex h-screen w-screen overflow-hidden bg-aurora-bg text-aurora-text">
-      <UpdateBanner />
       {!hideSidebar && <Sidebar />}
       <main className="relative flex-1 overflow-y-auto">
         {view === "now-playing" && <NowPlayingView />}

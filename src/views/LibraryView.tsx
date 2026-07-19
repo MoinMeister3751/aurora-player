@@ -7,10 +7,19 @@ import { PlaylistCard } from "@/components/library/PlaylistCard";
 import { RecentlyPlayed } from "@/components/library/RecentlyPlayed";
 import { QueueList } from "@/components/library/QueueList";
 import { Spinner } from "@/components/common/Spinner";
+import { Button } from "@/components/common/Button";
 
 export function LibraryView() {
-  const { playlists, savedAlbums, recentlyPlayed, queue, loadedOnce, loadLibrary, loadQueue } =
-    useLibraryStore();
+  const {
+    playlists,
+    savedAlbums,
+    recentlyPlayed,
+    queue,
+    loadedOnce,
+    error,
+    loadLibrary,
+    loadQueue,
+  } = useLibraryStore();
   const navigate = useUiStore((s) => s.navigate);
 
   useEffect(() => {
@@ -22,6 +31,17 @@ export function LibraryView() {
     return (
       <div className="flex h-full items-center justify-center">
         <Spinner size={32} />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex h-full flex-col items-center justify-center gap-4 text-center">
+        <p className="text-aurora-muted">Bibliothek konnte nicht geladen werden: {error}</p>
+        <Button variant="outline" onClick={() => loadLibrary()}>
+          Erneut versuchen
+        </Button>
       </div>
     );
   }
