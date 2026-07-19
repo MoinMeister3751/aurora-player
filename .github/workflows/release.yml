@@ -45,5 +45,5 @@ jobs:
           releaseBody: "See CHANGELOG or commit history for details. Download the .msi or .exe installer below — the app will auto-update itself after that."
           releaseDraft: true
           prerelease: false
-          includeUpdaterJson: true
+          uploadUpdaterJson: true
           args: --target x86_64-pc-windows-msvc
