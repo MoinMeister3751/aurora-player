@@ -127,6 +127,10 @@ export class PlaybackManager {
     return this.api.setRepeat(mode);
   }
 
+  setVolume(percent: number) {
+    return this.api.setVolume(percent, this.sdkDeviceId ?? undefined);
+  }
+
   activateAsDevice() {
     if (!this.sdkDeviceId) return Promise.resolve();
     return this.api.transferPlayback(this.sdkDeviceId, true);

@@ -76,80 +76,88 @@ export async function extractAmbientPalette(imageUrl: string): Promise<AmbientPa
   const cached = cache.get(imageUrl);
   if (cached) return cached;
 
-  const palette = await new Promise<AmbientPalette>((resolve, reject) => {
-    const img = new Image();
-    img.crossOrigin = "anonymous";
-    img.onload = () => {
-      try {
-        const canvas = document.createElement("canvas");
-        const size = 48;
-        canvas.width = size;
-        canvas.height = size;
-        const ctx = canvas.getContext("2d");
-        if (!ctx) throw new Error("no 2d context");
-        ctx.drawImage(img, 0, 0, size, size);
-        const { data } = ctx.getImageData(0, 0, size, size);
+  const palette = await (async (): Promise<AmbientPalette> => {
+    try {
+      // Fetch the raw bytes ourselves and decode via createImageBitmap
+      // instead of a DOM <img crossorigin> element: album art is also
+      // rendered as a plain <img> elsewhere (no crossOrigin) for the same
+      // URL, and browsers can serve that cached non-CORS response to a
+      // crossOrigin="anonymous" Image() too, silently tainting the canvas
+      // and making every extraction fail into the dark fallback below.
+      // A bitmap decoded from bytes we already hold can never taint the
+      // canvas, regardless of the source's CORS headers or cache state.
+      const response = await fetch(imageUrl);
+      if (!response.ok) throw new Error(`cover fetch failed: ${response.status}`);
+      const blob = await response.blob();
+      const bitmap = await createImageBitmap(blob);
 
-        const BUCKET = 24;
-        const buckets = new Map<
-          string,
-          { r: number; g: number; b: number; n: number; sat: number }
-        >();
+      const canvas = document.createElement("canvas");
+      const size = 48;
+      canvas.width = size;
+      canvas.height = size;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) throw new Error("no 2d context");
+      ctx.drawImage(bitmap, 0, 0, size, size);
+      const { data } = ctx.getImageData(0, 0, size, size);
 
-        for (let i = 0; i < data.length; i += 4) {
-          const r = data[i], g = data[i + 1], b = data[i + 2], a = data[i + 3];
-          if (a < 200) continue;
-          const key = `${Math.round(r / BUCKET)}-${Math.round(g / BUCKET)}-${Math.round(b / BUCKET)}`;
-          const [, s] = rgbToHsl(r, g, b);
-          const bucket = buckets.get(key) ?? { r: 0, g: 0, b: 0, n: 0, sat: 0 };
-          bucket.r += r;
-          bucket.g += g;
-          bucket.b += b;
-          bucket.sat += s;
-          bucket.n += 1;
-          buckets.set(key, bucket);
-        }
+      const BUCKET = 24;
+      const buckets = new Map<
+        string,
+        { r: number; g: number; b: number; n: number; sat: number }
+      >();
 
-        const candidates = Array.from(buckets.values())
-          .map((b) => ({
-            r: b.r / b.n,
-            g: b.g / b.n,
-            b: b.b / b.n,
-            weight: b.n,
-            avgSat: b.sat / b.n,
-          }))
-          // Favor dominant colors, but let saturated accents compete with
-          // larger neutral areas instead of always losing on pixel count.
-          .sort((a, b) => b.weight * (0.5 + b.avgSat) - a.weight * (0.5 + a.avgSat));
-
-        const distinct: typeof candidates = [];
-        for (const c of candidates) {
-          if (
-            distinct.every(
-              (d) => Math.abs(d.r - c.r) + Math.abs(d.g - c.g) + Math.abs(d.b - c.b) > 60,
-            )
-          ) {
-            distinct.push(c);
-          }
-          if (distinct.length === 2) break;
-        }
-
-        if (distinct.length === 0) {
-          throw new Error("no candidate colors");
-        }
-        const [first, second] = [distinct[0], distinct[1] ?? distinct[0]];
-
-        resolve({
-          primary: toGlowColor(first.r, first.g, first.b),
-          secondary: toGlowColor(second.r, second.g, second.b),
-        });
-      } catch (err) {
-        reject(err);
+      for (let i = 0; i < data.length; i += 4) {
+        const r = data[i], g = data[i + 1], b = data[i + 2], a = data[i + 3];
+        if (a < 200) continue;
+        const key = `${Math.round(r / BUCKET)}-${Math.round(g / BUCKET)}-${Math.round(b / BUCKET)}`;
+        const [, s] = rgbToHsl(r, g, b);
+        const bucket = buckets.get(key) ?? { r: 0, g: 0, b: 0, n: 0, sat: 0 };
+        bucket.r += r;
+        bucket.g += g;
+        bucket.b += b;
+        bucket.sat += s;
+        bucket.n += 1;
+        buckets.set(key, bucket);
       }
-    };
-    img.onerror = () => reject(new Error("Cover konnte nicht geladen werden."));
-    img.src = imageUrl;
-  }).catch<AmbientPalette>(() => ({ primary: "#2a2a30", secondary: "#141417" }));
+
+      const candidates = Array.from(buckets.values())
+        .map((b) => ({
+          r: b.r / b.n,
+          g: b.g / b.n,
+          b: b.b / b.n,
+          weight: b.n,
+          avgSat: b.sat / b.n,
+        }))
+        // Favor dominant colors, but let saturated accents compete with
+        // larger neutral areas instead of always losing on pixel count.
+        .sort((a, b) => b.weight * (0.5 + b.avgSat) - a.weight * (0.5 + a.avgSat));
+
+      const distinct: typeof candidates = [];
+      for (const c of candidates) {
+        if (
+          distinct.every(
+            (d) => Math.abs(d.r - c.r) + Math.abs(d.g - c.g) + Math.abs(d.b - c.b) > 60,
+          )
+        ) {
+          distinct.push(c);
+        }
+        if (distinct.length === 2) break;
+      }
+
+      if (distinct.length === 0) {
+        throw new Error("no candidate colors");
+      }
+      const [first, second] = [distinct[0], distinct[1] ?? distinct[0]];
+
+      return {
+        primary: toGlowColor(first.r, first.g, first.b),
+        secondary: toGlowColor(second.r, second.g, second.b),
+      };
+    } catch (err) {
+      console.warn("Ambient palette extraction failed, using fallback:", err);
+      return { primary: "#2a2a30", secondary: "#141417" };
+    }
+  })();
 
   cache.set(imageUrl, palette);
   return palette;

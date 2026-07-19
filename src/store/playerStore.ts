@@ -23,8 +23,11 @@ interface PlayerState {
   seek: (ms: number) => Promise<void>;
   toggleShuffle: () => Promise<void>;
   cycleRepeat: () => Promise<void>;
+  setVolume: (percent: number) => void;
   tickLocalProgress: (deltaMs: number) => void;
 }
+
+let volumeDebounce: ReturnType<typeof setTimeout> | null = null;
 
 function classifyError(err: unknown): PlayerErrorKind {
   if (err instanceof SpotifyApiError) {
@@ -139,6 +142,19 @@ export const usePlayerStore = create<PlayerState>((set, get) => ({
     const nextState = order[(order.indexOf(playback.repeat_state) + 1) % order.length];
     await manager.setRepeat(nextState);
     set({ playback: { ...playback, repeat_state: nextState } });
+  },
+
+  setVolume: (percent: number) => {
+    const { manager, playback } = get();
+    if (!playback?.device) return;
+    const clamped = Math.max(0, Math.min(100, Math.round(percent)));
+    // Instant UI feedback; the actual API call is debounced so dragging
+    // the slider doesn't fire a request per pixel of movement.
+    set({ playback: { ...playback, device: { ...playback.device, volume_percent: clamped } } });
+    if (volumeDebounce) clearTimeout(volumeDebounce);
+    volumeDebounce = setTimeout(() => {
+      manager?.setVolume(clamped).catch((err) => set({ errorKind: classifyError(err) }));
+    }, 200);
   },
 
   tickLocalProgress: (deltaMs: number) => {

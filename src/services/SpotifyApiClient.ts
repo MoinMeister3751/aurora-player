@@ -122,6 +122,12 @@ export class SpotifyApiClient {
     });
   }
 
+  setVolume(percent: number, deviceId?: string) {
+    const qs = new URLSearchParams({ volume_percent: String(Math.round(percent)) });
+    if (deviceId) qs.set("device_id", deviceId);
+    return this.request<void>(`/me/player/volume?${qs.toString()}`, { method: "PUT" });
+  }
+
   // --- Library / browsing ----------------------------------------------
 
   getRecentlyPlayed(limit = 20) {

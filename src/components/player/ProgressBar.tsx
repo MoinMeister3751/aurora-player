@@ -35,7 +35,7 @@ export function ProgressBar({
         }}
         className="w-full h-1.5 rounded-full appearance-none bg-white/15 accent-aurora-accent cursor-pointer"
         style={{
-          background: `linear-gradient(to right, #6ee7b7 ${percent}%, rgba(255,255,255,0.15) ${percent}%)`,
+          background: `linear-gradient(to right, var(--aurora-accent) ${percent}%, rgba(255,255,255,0.15) ${percent}%)`,
         }}
       />
       <div className="mt-2 flex justify-between text-xs text-aurora-muted tabular-nums">

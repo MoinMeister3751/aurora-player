@@ -6,6 +6,7 @@ import { AlbumArt } from "@/components/player/AlbumArt";
 import { TrackInfo } from "@/components/player/TrackInfo";
 import { ProgressBar } from "@/components/player/ProgressBar";
 import { PlayerControls } from "@/components/player/PlayerControls";
+import { VolumeSlider } from "@/components/player/VolumeSlider";
 import { ErrorState } from "@/components/common/ErrorState";
 import { Spinner } from "@/components/common/Spinner";
 
@@ -16,6 +17,7 @@ export function NowPlayingView() {
   const errorKind = usePlayerStore((s) => s.errorKind);
   const localProgressMs = usePlayerStore((s) => s.localProgressMs);
   const seek = usePlayerStore((s) => s.seek);
+  const setVolume = usePlayerStore((s) => s.setVolume);
   const refresh = usePlayerStore((s) => s.refresh);
   const isFullscreen = useUiStore((s) => s.isFullscreen);
   const toggleFullscreen = useUiStore((s) => s.toggleFullscreen);
@@ -60,6 +62,10 @@ export function NowPlayingView() {
             onSeek={seek}
           />
           <PlayerControls />
+
+          {playback?.device?.volume_percent != null && (
+            <VolumeSlider percent={playback.device.volume_percent} onChange={setVolume} />
+          )}
 
           <div className="mt-2 flex items-center gap-4 text-xs text-aurora-muted/70">
             <span>Wiedergabe über Spotify</span>
