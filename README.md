@@ -90,7 +90,13 @@ embedded webview — this follows the OAuth-for-native-apps best practice
 (RFC 8252) so Aurora never sees your Spotify credentials directly. A small
 local HTTP listener (`oauth_loopback.rs`) catches the redirect on
 `127.0.0.1:<port>`, and the refresh token is stored in the Windows
-Credential Manager via the `keyring` crate — not as a plaintext file.
+Credential Manager via direct Win32 calls (`secure_store.rs`) — not as a
+plaintext file. This talks to Credential Manager directly with
+`CRED_PERSIST_LOCAL_MACHINE` rather than using the `keyring` crate, which
+hardcodes `CRED_PERSIST_ENTERPRISE`; on machines where enterprise
+credential roaming doesn't fully complete (e.g. Microsoft-account-linked
+but not domain-joined), that persistence type silently fails to survive
+past process exit, which broke "stay signed in" entirely.
 
 ## Playback modes
 

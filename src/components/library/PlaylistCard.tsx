@@ -1,5 +1,6 @@
 import type { SpotifyPlaylist } from "@/types/spotify";
 import { firstImage } from "@/lib/image";
+import { CoverImage } from "@/components/common/CoverImage";
 
 export function PlaylistCard({
   playlist,
@@ -15,11 +16,11 @@ export function PlaylistCard({
       onClick={onClick}
       className="group flex flex-col gap-3 rounded-xl p-3 text-left transition-colors hover:bg-white/5"
     >
-      <div className="aspect-square w-full overflow-hidden rounded-lg bg-aurora-surface2">
-        {image ? (
-          <img src={image.url} alt="" className="h-full w-full object-cover" draggable={false} />
-        ) : null}
-      </div>
+      <CoverImage
+        src={image?.url}
+        alt=""
+        className="aspect-square w-full overflow-hidden rounded-lg object-cover"
+      />
       <div>
         <p className="truncate text-sm font-medium text-aurora-text">{playlist.name}</p>
         <p className="truncate text-xs text-aurora-muted">

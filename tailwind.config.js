@@ -22,16 +22,11 @@ export default {
       },
       animation: {
         "fade-in": "fadeIn 400ms ease-out",
-        "ambient-shift": "ambientShift 18s ease-in-out infinite",
       },
       keyframes: {
         fadeIn: {
           "0%": { opacity: 0, transform: "translateY(8px)" },
           "100%": { opacity: 1, transform: "translateY(0)" },
-        },
-        ambientShift: {
-          "0%, 100%": { transform: "scale(1) rotate(0deg)" },
-          "50%": { transform: "scale(1.15) rotate(6deg)" },
         },
       },
     },

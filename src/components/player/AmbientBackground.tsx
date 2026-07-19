@@ -1,23 +1,22 @@
 import type { AmbientPalette } from "@/services/ColorExtractor";
 
+/**
+ * Full-bleed color wash derived from the current cover art — matching the
+ * classic Spotify fullscreen look (a solid, vivid fill of the dominant
+ * art color) rather than a subtle blurred-blob glow in the corners.
+ */
 export function AmbientBackground({ palette }: { palette: AmbientPalette | null }) {
   const primary = palette?.primary ?? "#141417";
   const secondary = palette?.secondary ?? "#0a0a0c";
 
   return (
-    <div className="absolute inset-0 -z-10 overflow-hidden bg-aurora-bg">
-      <div
-        className="absolute -top-1/3 -left-1/4 h-[85vh] w-[85vh] rounded-full blur-[120px] opacity-70 animate-ambient-shift transition-colors duration-1000"
-        style={{ backgroundColor: primary }}
-      />
-      <div
-        className="absolute -bottom-1/3 -right-1/4 h-[75vh] w-[75vh] rounded-full blur-[120px] opacity-60 animate-ambient-shift transition-colors duration-1000"
-        style={{ backgroundColor: secondary, animationDelay: "-9s" }}
-      />
-      {/* Vignette centered on the track info/controls for legibility —
-          much lighter than a flat scrim so the extracted colors still
-          read clearly at the edges instead of being washed to near-black. */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(10,10,12,0.45)_0%,rgba(10,10,12,0.15)_55%,rgba(10,10,12,0.35)_100%)]" />
+    <div
+      className="absolute inset-0 -z-10 transition-colors duration-700"
+      style={{ background: `linear-gradient(160deg, ${primary} 0%, ${secondary} 100%)` }}
+    >
+      {/* Gentle vignette centered on the track info/controls, just enough
+          to keep text legible without hiding the color wash at the edges. */}
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_35%,rgba(0,0,0,0.4)_100%)]" />
     </div>
   );
 }

@@ -4,6 +4,7 @@ import { useAuthStore } from "@/store/authStore";
 import { usePlayerStore } from "@/store/playerStore";
 import { useUiStore } from "@/store/uiStore";
 import { Spinner } from "@/components/common/Spinner";
+import { CoverImage } from "@/components/common/CoverImage";
 import { firstImage, smallestImage } from "@/lib/image";
 import type { PlaylistTrackItem, SpotifyPlaylist } from "@/types/spotify";
 
@@ -56,9 +57,11 @@ export function PlaylistDetailView({ playlistId }: { playlistId: string }) {
       </button>
 
       <div className="mb-8 flex items-end gap-6">
-        {firstImage(playlist.images) && (
-          <img src={firstImage(playlist.images)!.url} alt="" className="h-40 w-40 rounded-lg object-cover shadow-lg" />
-        )}
+        <CoverImage
+          src={firstImage(playlist.images)?.url}
+          alt=""
+          className="h-40 w-40 flex-shrink-0 rounded-lg object-cover shadow-lg"
+        />
         <div>
           <p className="text-xs uppercase tracking-wide text-aurora-muted">Playlist</p>
           <h1 className="mt-1 text-3xl font-bold">{playlist.name}</h1>
@@ -85,13 +88,11 @@ export function PlaylistDetailView({ playlistId }: { playlistId: string }) {
             >
               <span className="text-right text-xs text-aurora-muted">{i + 1}</span>
               <div className="flex min-w-0 items-center gap-3">
-                {smallestImage(item.track.album.images) && (
-                  <img
-                    src={smallestImage(item.track.album.images)!.url}
-                    alt=""
-                    className="h-10 w-10 rounded object-cover"
-                  />
-                )}
+                <CoverImage
+                  src={smallestImage(item.track.album.images)?.url}
+                  alt=""
+                  className="h-10 w-10 flex-shrink-0 rounded object-cover"
+                />
                 <div className="min-w-0">
                   <p className="truncate text-sm text-aurora-text">{item.track.name}</p>
                   <p className="truncate text-xs text-aurora-muted">

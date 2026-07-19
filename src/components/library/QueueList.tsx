@@ -1,5 +1,6 @@
 import type { SpotifyTrack } from "@/types/spotify";
 import { smallestImage } from "@/lib/image";
+import { CoverImage } from "@/components/common/CoverImage";
 
 export function QueueList({ tracks }: { tracks: SpotifyTrack[] }) {
   if (tracks.length === 0) {
@@ -11,13 +12,11 @@ export function QueueList({ tracks }: { tracks: SpotifyTrack[] }) {
       {tracks.slice(0, 15).map((track, i) => (
         <div key={`${track.id}-${i}`} className="flex items-center gap-3 rounded-lg px-2 py-2 hover:bg-white/5">
           <span className="w-4 text-right text-xs text-aurora-muted">{i + 1}</span>
-          {smallestImage(track.album.images) && (
-            <img
-              src={smallestImage(track.album.images)!.url}
-              alt=""
-              className="h-9 w-9 rounded object-cover"
-            />
-          )}
+          <CoverImage
+            src={smallestImage(track.album.images)?.url}
+            alt=""
+            className="h-9 w-9 flex-shrink-0 rounded object-cover"
+          />
           <div className="min-w-0">
             <p className="truncate text-sm text-aurora-text">{track.name}</p>
             <p className="truncate text-xs text-aurora-muted">
