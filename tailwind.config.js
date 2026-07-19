@@ -4,14 +4,17 @@ export default {
   theme: {
     extend: {
       colors: {
+        // References CSS custom properties (set in index.css and
+        // overridden at runtime by the theme system) instead of static
+        // hex values, so themes can be switched/created without a rebuild.
         aurora: {
-          bg: "#0a0a0c",
-          surface: "#131316",
-          surface2: "#1b1b1f",
-          border: "#26262b",
-          text: "#f2f2f3",
-          muted: "#9a9aa2",
-          accent: "#6ee7b7",
+          bg: "var(--aurora-bg)",
+          surface: "var(--aurora-surface)",
+          surface2: "var(--aurora-surface2)",
+          border: "var(--aurora-border)",
+          text: "var(--aurora-text)",
+          muted: "var(--aurora-muted)",
+          accent: "var(--aurora-accent)",
         },
       },
       fontFamily: {

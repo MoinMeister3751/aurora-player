@@ -1,4 +1,5 @@
 import type { SpotifyPlaylist } from "@/types/spotify";
+import { firstImage } from "@/lib/image";
 
 export function PlaylistCard({
   playlist,
@@ -7,7 +8,7 @@ export function PlaylistCard({
   playlist: SpotifyPlaylist;
   onClick: () => void;
 }) {
-  const image = playlist.images[0];
+  const image = firstImage(playlist.images);
 
   return (
     <button

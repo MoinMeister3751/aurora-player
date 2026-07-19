@@ -201,6 +201,17 @@ their next launch.
 | `F` / `F11` | Toggle fullscreen |
 | `Esc` | Exit fullscreen |
 
+## Themes
+
+Aurora ships with five built-in themes (Aurora, Midnight, Ember, Violet
+Dusk, Daylight) plus support for fully custom themes — pick colors for
+background, surfaces, border, text, and accent under **Einstellungen**.
+Custom themes and the active selection persist across restarts via
+`tauri-plugin-store` (`themes.json` in the app data dir). Theming works by
+setting CSS custom properties on `:root` (`src/services/ThemeService.ts`);
+Tailwind's `aurora-*` color tokens all reference those variables, so a
+theme switch re-colors the whole app instantly with no rebuild.
+
 ## Known limitations
 
 - The Web Playback SDK path depends on WebView2's DRM support, which varies

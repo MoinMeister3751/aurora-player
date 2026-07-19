@@ -4,6 +4,7 @@ import { useAuthStore } from "@/store/authStore";
 import { usePlayerStore } from "@/store/playerStore";
 import { useUiStore } from "@/store/uiStore";
 import { Spinner } from "@/components/common/Spinner";
+import { firstImage, smallestImage } from "@/lib/image";
 import type { PlaylistTrackItem, SpotifyPlaylist } from "@/types/spotify";
 
 function formatDuration(ms: number): string {
@@ -55,8 +56,8 @@ export function PlaylistDetailView({ playlistId }: { playlistId: string }) {
       </button>
 
       <div className="mb-8 flex items-end gap-6">
-        {playlist.images[0] && (
-          <img src={playlist.images[0].url} alt="" className="h-40 w-40 rounded-lg object-cover shadow-lg" />
+        {firstImage(playlist.images) && (
+          <img src={firstImage(playlist.images)!.url} alt="" className="h-40 w-40 rounded-lg object-cover shadow-lg" />
         )}
         <div>
           <p className="text-xs uppercase tracking-wide text-aurora-muted">Playlist</p>
@@ -84,9 +85,9 @@ export function PlaylistDetailView({ playlistId }: { playlistId: string }) {
             >
               <span className="text-right text-xs text-aurora-muted">{i + 1}</span>
               <div className="flex min-w-0 items-center gap-3">
-                {item.track.album.images.at(-1) && (
+                {smallestImage(item.track.album.images) && (
                   <img
-                    src={item.track.album.images.at(-1)!.url}
+                    src={smallestImage(item.track.album.images)!.url}
                     alt=""
                     className="h-10 w-10 rounded object-cover"
                   />

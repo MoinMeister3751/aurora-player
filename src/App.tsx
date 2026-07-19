@@ -3,6 +3,7 @@ import { useAuthStore } from "@/store/authStore";
 import { usePlayerStore } from "@/store/playerStore";
 import { useUiStore } from "@/store/uiStore";
 import { useUpdateStore } from "@/store/updateStore";
+import { useThemeStore } from "@/store/themeStore";
 import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
 import { usePlaybackPolling } from "@/hooks/usePlaybackPolling";
 import { LoginView } from "@/views/LoginView";
@@ -16,12 +17,14 @@ export default function App() {
   const initializePlayer = usePlayerStore((s) => s.initialize);
   const syncFullscreenState = useUiStore((s) => s.syncFullscreenState);
   const checkForUpdate = useUpdateStore((s) => s.checkForUpdate);
+  const loadThemes = useThemeStore((s) => s.loadThemes);
 
   useEffect(() => {
     bootstrap();
     syncFullscreenState();
     checkForUpdate();
-  }, [bootstrap, syncFullscreenState, checkForUpdate]);
+    loadThemes();
+  }, [bootstrap, syncFullscreenState, checkForUpdate, loadThemes]);
 
   useEffect(() => {
     if (status === "signed-in") {

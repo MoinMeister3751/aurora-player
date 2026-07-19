@@ -2,6 +2,7 @@ import { openUrl } from "@tauri-apps/plugin-opener";
 import { useLibraryStore } from "@/store/libraryStore";
 import { usePlayerStore } from "@/store/playerStore";
 import { Spinner } from "@/components/common/Spinner";
+import { firstImage, smallestImage } from "@/lib/image";
 
 export function SearchResultsList() {
   const results = useLibraryStore((s) => s.searchResults);
@@ -45,8 +46,8 @@ export function SearchResultsList() {
                 onClick={() => manager?.play({ uris: [track.uri] })}
                 className="flex items-center gap-3 rounded-lg px-2 py-2 text-left hover:bg-white/5"
               >
-                {track.album.images.at(-1) && (
-                  <img src={track.album.images.at(-1)!.url} alt="" className="h-10 w-10 rounded object-cover" />
+                {smallestImage(track.album.images) && (
+                  <img src={smallestImage(track.album.images)!.url} alt="" className="h-10 w-10 rounded object-cover" />
                 )}
                 <div className="min-w-0">
                   <p className="truncate text-sm text-aurora-text">{track.name}</p>
@@ -72,8 +73,8 @@ export function SearchResultsList() {
                 onClick={() => openUrl(album.external_urls.spotify)}
                 className="flex flex-col gap-2 rounded-lg p-2 text-left hover:bg-white/5"
               >
-                {album.images[0] && (
-                  <img src={album.images[0].url} alt="" className="aspect-square w-full rounded object-cover" />
+                {firstImage(album.images) && (
+                  <img src={firstImage(album.images)!.url} alt="" className="aspect-square w-full rounded object-cover" />
                 )}
                 <div>
                   <p className="truncate text-sm text-aurora-text">{album.name}</p>
@@ -118,8 +119,8 @@ export function SearchResultsList() {
                 onClick={() => openUrl(playlist.external_urls.spotify)}
                 className="flex flex-col gap-2 rounded-lg p-2 text-left hover:bg-white/5"
               >
-                {playlist.images[0] && (
-                  <img src={playlist.images[0].url} alt="" className="aspect-square w-full rounded object-cover" />
+                {firstImage(playlist.images) && (
+                  <img src={firstImage(playlist.images)!.url} alt="" className="aspect-square w-full rounded object-cover" />
                 )}
                 <p className="truncate text-sm text-aurora-text">{playlist.name}</p>
               </button>

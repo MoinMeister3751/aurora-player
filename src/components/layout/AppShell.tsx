@@ -4,6 +4,7 @@ import { NowPlayingView } from "@/views/NowPlayingView";
 import { LibraryView } from "@/views/LibraryView";
 import { PlaylistDetailView } from "@/views/PlaylistDetailView";
 import { SearchView } from "@/views/SearchView";
+import { SettingsView } from "@/views/SettingsView";
 
 export function AppShell() {
   const view = useUiStore((s) => s.view);
@@ -22,6 +23,7 @@ export function AppShell() {
           <PlaylistDetailView playlistId={selectedPlaylistId} />
         )}
         {view === "search" && <SearchView />}
+        {view === "settings" && <SettingsView />}
       </main>
     </div>
   );

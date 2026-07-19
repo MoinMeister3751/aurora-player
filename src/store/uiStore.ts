@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 
-export type ViewId = "now-playing" | "library" | "search" | "playlist";
+export type ViewId = "now-playing" | "library" | "search" | "playlist" | "settings";
 
 interface UiState {
   view: ViewId;

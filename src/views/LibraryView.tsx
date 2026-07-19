@@ -8,6 +8,7 @@ import { RecentlyPlayed } from "@/components/library/RecentlyPlayed";
 import { QueueList } from "@/components/library/QueueList";
 import { Spinner } from "@/components/common/Spinner";
 import { Button } from "@/components/common/Button";
+import { firstImage } from "@/lib/image";
 
 export function LibraryView() {
   const {
@@ -70,9 +71,9 @@ export function LibraryView() {
                 onClick={() => openUrl(album.external_urls.spotify)}
                 className="flex flex-col gap-2 rounded-lg p-2 text-left hover:bg-white/5"
               >
-                {album.images[0] && (
+                {firstImage(album.images) && (
                   <img
-                    src={album.images[0].url}
+                    src={firstImage(album.images)!.url}
                     alt=""
                     className="aspect-square w-full rounded object-cover"
                   />

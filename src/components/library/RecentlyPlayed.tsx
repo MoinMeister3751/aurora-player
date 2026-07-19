@@ -1,4 +1,5 @@
 import type { RecentlyPlayedItem } from "@/types/spotify";
+import { firstImage } from "@/lib/image";
 
 export function RecentlyPlayed({ items }: { items: RecentlyPlayedItem[] }) {
   const seen = new Set<string>();
@@ -17,9 +18,9 @@ export function RecentlyPlayed({ items }: { items: RecentlyPlayedItem[] }) {
             key={`${item.track.id}-${item.played_at}`}
             className="flex items-center gap-3 rounded-lg px-2 py-2 hover:bg-white/5"
           >
-            {item.track.album.images[0] && (
+            {firstImage(item.track.album.images) && (
               <img
-                src={item.track.album.images[0].url}
+                src={firstImage(item.track.album.images)!.url}
                 alt=""
                 className="h-10 w-10 rounded object-cover"
               />

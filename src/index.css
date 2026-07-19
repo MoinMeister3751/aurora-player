@@ -2,6 +2,19 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Default theme ("Aurora"). Overridden at runtime by src/services/ThemeService.ts
+   when the user picks a different built-in or custom theme; these values are
+   just what renders before JS applies the persisted choice. */
+:root {
+  --aurora-bg: #0a0a0c;
+  --aurora-surface: #131316;
+  --aurora-surface2: #1b1b1f;
+  --aurora-border: #26262b;
+  --aurora-text: #f2f2f3;
+  --aurora-muted: #9a9aa2;
+  --aurora-accent: #6ee7b7;
+}
+
 html,
 body,
 #root {

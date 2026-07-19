@@ -1,4 +1,5 @@
 import type { SpotifyImage } from "@/types/spotify";
+import { firstImage } from "@/lib/image";
 
 /**
  * Renders cover art at its native aspect ratio inside a fixed square
@@ -10,11 +11,11 @@ export function AlbumArt({
   alt,
   size = 420,
 }: {
-  images: SpotifyImage[];
+  images: SpotifyImage[] | null;
   alt: string;
   size?: number;
 }) {
-  const image = images[0];
+  const image = firstImage(images);
 
   return (
     <div

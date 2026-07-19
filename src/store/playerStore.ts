@@ -4,6 +4,7 @@ import { PlaybackManager } from "@/services/PlaybackManager";
 import { extractAmbientPalette, type AmbientPalette } from "@/services/ColorExtractor";
 import { SpotifyApiError, type PlaybackState } from "@/types/spotify";
 import type { PlayerErrorKind } from "@/components/common/errorKind";
+import { firstImage } from "@/lib/image";
 
 interface PlayerState {
   manager: PlaybackManager | null;
@@ -64,7 +65,7 @@ export const usePlayerStore = create<PlayerState>((set, get) => ({
         errorKind: playback ? "none" : "no-device",
         isLoading: false,
       });
-      const art = playback?.item?.album.images[0]?.url;
+      const art = firstImage(playback?.item?.album.images)?.url;
       if (art) {
         const ambient = await extractAmbientPalette(art);
         set({ ambient });

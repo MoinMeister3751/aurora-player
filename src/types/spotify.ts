@@ -60,7 +60,8 @@ export interface SpotifyPlaylist {
   id: string;
   name: string;
   description: string | null;
-  images: SpotifyImage[];
+  // Spotify returns null (not []) for playlists without a computed cover.
+  images: SpotifyImage[] | null;
   owner: { display_name: string | null; id: string };
   tracks: SpotifyPlaylistTrackRef;
   uri: string;
