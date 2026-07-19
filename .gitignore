@@ -1,0 +1,8 @@
+node_modules
+dist
+.env
+src-tauri/target
+src-tauri/gen
+src-tauri/*.key
+src-tauri/*.key.pub
+*.log
