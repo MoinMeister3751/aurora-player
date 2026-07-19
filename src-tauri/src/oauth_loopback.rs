@@ -33,9 +33,17 @@ const ERROR_HTML: &str = r#"<!doctype html>
 <body><div><h1>Anmeldung fehlgeschlagen</h1><p>Bitte kehre zu Aurora zurück und versuche es erneut.</p></div></body></html>"#;
 
 /// Starts a one-shot HTTP server on 127.0.0.1:<port> to catch the Spotify
-/// PKCE redirect. Blocks the calling (spawned) thread until exactly one
-/// /callback request arrives, then emits the parsed query params to the
-/// frontend as an `oauth://callback` event and shuts the server down.
+/// PKCE redirect. Blocks the calling (spawned) thread until a request
+/// carrying an OAuth `code`/`state`/`error` query param arrives, then emits
+/// it to the frontend as an `oauth://callback` event and shuts the server
+/// down.
+///
+/// The redirect URI's path must match what's registered in the Spotify
+/// Developer Dashboard exactly (Spotify rejects any mismatch). Both the
+/// bare root path (`http://127.0.0.1:<port>`) and a `/callback` suffix are
+/// accepted here so either dashboard configuration works without a code
+/// change; anything else (e.g. a stray `/favicon.ico` request) is ignored
+/// and does not consume the one-shot listener.
 ///
 /// Using the system browser + a loopback listener (RFC 8252) instead of an
 /// embedded webview keeps the app from ever touching the user's Spotify
@@ -49,10 +57,11 @@ pub async fn start_oauth_loopback(app: AppHandle, port: u16) -> Result<(), Strin
         for request in server.incoming_requests() {
             let url_str = format!("http://127.0.0.1:{port}{}", request.url());
             let parsed = Url::parse(&url_str).ok();
-            let is_callback = parsed
-                .as_ref()
-                .map(|u| u.path().trim_end_matches('/') == "/callback")
-                .unwrap_or(false);
+            let is_callback = parsed.as_ref().map_or(false, |u| {
+                let path = u.path().trim_end_matches('/');
+                (path.is_empty() || path == "/callback")
+                    && u.query_pairs().any(|(k, _)| matches!(k.as_ref(), "code" | "error"))
+            });
 
             if !is_callback {
                 let _ = request.respond(Response::from_string("Not Found").with_status_code(404));

@@ -12,10 +12,12 @@ export const env = {
   clientId: required("VITE_SPOTIFY_CLIENT_ID"),
   loopbackPort: Number(import.meta.env.VITE_SPOTIFY_LOOPBACK_PORT || 17845),
   get redirectUri() {
-    return (
-      import.meta.env.VITE_SPOTIFY_REDIRECT_URI ||
-      `http://127.0.0.1:${this.loopbackPort}/callback`
-    );
+    // Must match the Redirect URI registered in the Spotify Developer
+    // Dashboard byte-for-byte. Defaults to the bare loopback root (no
+    // /callback suffix) since that's what Spotify requires you to register
+    // as-is; override via VITE_SPOTIFY_REDIRECT_URI if you registered a
+    // different path.
+    return import.meta.env.VITE_SPOTIFY_REDIRECT_URI || `http://127.0.0.1:${this.loopbackPort}`;
   },
 };
 

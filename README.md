@@ -17,7 +17,7 @@ API. It is not affiliated with, endorsed by, or a replacement for Spotify.
 ```
 src-tauri/src/
   main.rs             — Tauri entrypoint, registers commands
-  oauth_loopback.rs    — one-shot HTTP server on 127.0.0.1:<port>/callback
+  oauth_loopback.rs    — one-shot HTTP server on 127.0.0.1:<port>
   secure_store.rs      — refresh token storage in the OS credential manager
 
 src/
@@ -38,10 +38,12 @@ src/
    and create an app.
 2. Under **Redirect URIs**, add exactly:
    ```
-   http://127.0.0.1:17845/callback
+   http://127.0.0.1:17845
    ```
-   (Spotify requires an exact match — if you change the port in `.env`,
-   update it here too.)
+   (Spotify requires a byte-for-byte match — no trailing slash. If you
+   change the port in `.env`, update it here too. Aurora's loopback server
+   also accepts a `/callback` suffix if you'd rather register that instead
+   — see `src-tauri/src/oauth_loopback.rs`.)
 3. Copy the **Client ID** (no client secret is needed — this app uses PKCE).
 
 ### 2. Configure environment
@@ -87,7 +89,7 @@ Aurora opens Spotify's login page in your **default system browser**, not an
 embedded webview — this follows the OAuth-for-native-apps best practice
 (RFC 8252) so Aurora never sees your Spotify credentials directly. A small
 local HTTP listener (`oauth_loopback.rs`) catches the redirect on
-`127.0.0.1:<port>/callback`, and the refresh token is stored in the Windows
+`127.0.0.1:<port>`, and the refresh token is stored in the Windows
 Credential Manager via the `keyring` crate — not as a plaintext file.
 
 ## Playback modes

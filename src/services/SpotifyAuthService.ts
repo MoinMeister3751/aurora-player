@@ -30,7 +30,7 @@ interface TokenResponse {
 
 /**
  * Authorization Code Flow with PKCE against a loopback redirect
- * (http://127.0.0.1:<port>/callback), per RFC 8252. The login page is
+ * (http://127.0.0.1:<port>), per RFC 8252. The login page is
  * opened in the user's default browser rather than an embedded webview so
  * Aurora never sees the user's Spotify credentials directly.
  */
